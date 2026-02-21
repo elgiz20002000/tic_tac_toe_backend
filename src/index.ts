@@ -26,6 +26,7 @@ const PORT = process.env.PORT || 3000;
 const allowedMethods = ["GET", "POST", "PUT", "DELETE"];
 
 // Initialize middleware
+app.set("trust proxy", 1);
 app.disable("x-powered-by");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
