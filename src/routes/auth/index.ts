@@ -5,10 +5,7 @@ import * as authController from "../../controllers/auth.controller.ts";
 
 const router = Router();
 
-router.get(
-  "/facebook",
-  passport.authenticate("facebook", { state: "myapp://auth/callback", scope: ["public_profile"] }),
-);
+router.get("/facebook", passport.authenticate("facebook", { state: "myapp://auth/callback" }));
 
 router.get(
   "/facebook/callback",
