@@ -1,0 +1,81 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+enum EOnlinePlayerStatus {
+  Online
+  Offline
+  Playing
+}
+
+enum EGameStatus {
+  Won
+  Lost
+  Draw
+}
+
+enum EInviteStatus {
+  Pending
+  Accepted
+  Denied
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  name      String?
+  wins      Int      @default(0)
+  losses    Int      @default(0)
+  draws     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  onlinePlayer           OnlinePlayer?
+  sentFriendRequests     Friendship[]  @relation("SentFriendRequests")
+  receivedFriendRequests Friendship[]  @relation("ReceivedFriendRequests")
+  gameHistory            GameHistory[]
+}
+
+model GameHistory {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opponentName String
+  status       EGameStatus
+  gameData     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Scoreboard {
+  id         String   @id @default(uuid())
+  playerName String
+  score      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model OnlinePlayer {
+  id            String              @id @default(uuid())
+  userId        String              @unique
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastSeen      DateTime            @default(now())
+  currentStatus EOnlinePlayerStatus @default(Online)
+}
+
+model Friendship {
+  id          String        @id @default(uuid())
+  requesterId String
+  addresseeId String
+  status      EInviteStatus @default(Pending)
+  createdAt   DateTime      @default(now())
+
+  requester User @relation("SentFriendRequests", fields: [requesterId], references: [id])
+  addressee User @relation("ReceivedFriendRequests", fields: [addresseeId], references: [id])
+}
