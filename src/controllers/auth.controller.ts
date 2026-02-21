@@ -5,7 +5,6 @@ import type { IResponseError } from "../interfaces.ts";
 import * as authService from "../services/auth.service.ts";
 
 export const loginCallback = async (req: Request, res: Response, next: NextFunction) => {
-  console.log("req.user", req.user);
   const user = req.user;
 
   if (!user?.id) {
@@ -17,7 +16,6 @@ export const loginCallback = async (req: Request, res: Response, next: NextFunct
   try {
     const token = await authService.loginCallback(user);
     const redirect = req.query.state;
-    console.log("redirect", redirect);
 
     res.redirect(`${redirect}?token=${token}`);
   } catch (err) {
