@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
   "/facebook",
-  passport.authenticate("facebook", { state: "myapp://auth/callback", scope: ["email"] }),
+  passport.authenticate("facebook", { state: "myapp://auth/callback", scope: ["public_profile"] }),
 );
 
 router.get(

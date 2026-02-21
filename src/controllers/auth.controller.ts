@@ -17,8 +17,6 @@ export const loginCallback = async (req: Request, res: Response, next: NextFunct
     const token = await authService.loginCallback(user);
     const redirect = req.query.state;
 
-    console.log("redirect", redirect);
-
     res.redirect(`${redirect}?token=${token}`);
   } catch (err) {
     next(err);

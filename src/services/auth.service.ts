@@ -30,8 +30,5 @@ export const loginCallback = async (user: User) => {
       },
     });
   }
-  return jwt.sign(
-    { id: dbUser.id, name: dbUser.name, email: dbUser.email },
-    process.env.JWT_SECRET || "",
-  );
+  return jwt.sign({ id: dbUser.id, name: dbUser.name }, process.env.JWT_SECRET || "");
 };
