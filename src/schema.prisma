@@ -29,7 +29,7 @@ enum EInviteStatus {
 model User {
   id        String   @id @default(uuid())
   email     String?  @unique
-  name      String?
+  name      String?  @unique
   wins      Int      @default(0)
   losses    Int      @default(0)
   draws     Int      @default(0)
