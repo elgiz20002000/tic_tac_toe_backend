@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd ~/tic-tac-toe-backend
+            cd ~/tic_tac_toe_backend
             git pull origin main
             npm run docker:up
             npm run docker:migrate
