@@ -7,9 +7,10 @@
     "node": ">=22.7.0"
   },
   "scripts": {
-    "build": "npx prisma generate --schema=src/schema.prisma && npx prisma migrate deploy --schema=src/schema.prisma",
-    "start:prod": "node --experimental-transform-types src/index.ts",
-    "start:dev": "node --experimental-transform-types --watch src/index.ts"
+    "start:dev": "node --experimental-transform-types  --watch src/index.ts",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:migrate": "docker compose exec app npx prisma migrate deploy --schema=src/schema.prisma"
   },
   "prisma": {
     "seed": "ts-node src/seeders/index.ts"

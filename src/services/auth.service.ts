@@ -5,13 +5,14 @@ import { prisma } from "../config/db/index.ts";
 
 export const loginCallback = async (user: User) => {
   let dbUser = await prisma.user.findUnique({
-    where: { id: user.id },
+    where: { email: user.email, name: user.name },
   });
 
   if (!dbUser) {
     dbUser = await prisma.user.create({
       data: {
-        name: user.name || null,
+        email: user.email,
+        name: user.name,
       },
     });
 

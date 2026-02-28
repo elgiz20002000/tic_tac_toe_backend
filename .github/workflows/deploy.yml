@@ -17,5 +17,5 @@ jobs:
           script: |
             cd ~/tic-tac-toe-backend
             git pull origin main
-            docker compose up -d --build
-            docker compose exec -T app npx prisma migrate deploy --schema=src/schema.prisma
+            npm run docker:up
+            npm run docker:migrate

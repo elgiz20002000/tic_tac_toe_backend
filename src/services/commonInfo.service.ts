@@ -44,8 +44,6 @@ export const getGameHistory = async (
 };
 
 export const getScoreboard = async (searchText?: string) => {
-  console.log("Search Text:", searchText);
-
   return prisma.scoreboard.findMany({
     orderBy: { score: "desc" },
     where: {

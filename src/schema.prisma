@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("LOCAL_DATABASE_URL")
 }
 
 generator client {
@@ -28,8 +28,8 @@ enum EInviteStatus {
 
 model User {
   id        String   @id @default(uuid())
-  email     String?  @unique
-  name      String?  @unique
+  email     String   @unique
+  name      String   @unique
   wins      Int      @default(0)
   losses    Int      @default(0)
   draws     Int      @default(0)

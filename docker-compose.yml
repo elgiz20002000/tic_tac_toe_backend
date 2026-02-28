@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: tic_tac_toe
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -27,7 +27,7 @@ services:
     env_file:
       - .env.production
     environment:
-      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@db:5432/tic_tac_toe
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
 
 volumes:
   pgdata:
