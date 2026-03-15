@@ -10,10 +10,11 @@
     "start:dev": "node --experimental-transform-types  --watch src/index.ts",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
-    "docker:migrate": "docker compose exec app npx prisma migrate deploy --schema=src/schema.prisma"
+    "docker:migrate": "docker compose exec app npx prisma migrate deploy --schema=src/schema.prisma",
+    "db:seed": "npx prisma db seed --schema=src/schema.prisma"
   },
   "prisma": {
-    "seed": "ts-node src/seeders/index.ts"
+    "seed": "node --experimental-transform-types src/seeders/index.ts"
   },
   "keywords": [],
   "author": "",
