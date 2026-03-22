@@ -1,3 +1,4 @@
+import type { Express } from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
@@ -12,12 +13,12 @@ passport.use(
       try {
         const user = {
           id: profile.id,
-          name: profile.displayName || null,
+          name: profile.displayName || "",
           email: profile.emails?.[0]?.value || "",
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-        done(null, user);
+        done(null, user as Express.User);
       } catch (error) {
         done(error);
       }

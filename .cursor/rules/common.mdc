@@ -1,0 +1,47 @@
+---
+description: Helpers, types, enums, and constants must live in dedicated files and be imported—never defined inline where used.
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: true
+---
+
+# Shared Code Location
+
+Do **not** define helpers, new types, enums, or constants in the same file where they are used. Define them in the appropriate shared location and import them.
+
+## Where to Put What
+
+| Kind | Location | Example |
+|------|----------|---------|
+| **Types / Interfaces** | `src/interfaces.ts` or `src/types/` (e.g. `src/types/common.types.ts`) | Shared interfaces, Zod-inferred types |
+| **Enums** | `src/enums.ts` or `src/enums/` | Status, error codes, domain enums |
+| **Constants** | `src/constants.ts` or `src/constants/` | Config values, magic strings/numbers |
+| **Helpers / Utils** | `src/utils/` (e.g. `src/utils/format.ts`) | Pure functions, formatters, validators |
+
+## Rules
+
+1. **Types**: Define in `src/interfaces.ts` or under `src/types/`. Use `import type` when only used as types.
+2. **Enums**: Define in `src/enums.ts` (or `src/enums/<name>.ts`). Import from there; do not redeclare in controllers, services, or routes.
+3. **Constants**: Define in `src/constants.ts` or `src/constants/<domain>.ts`. Import where needed.
+4. **Helpers**: Define in `src/utils/<name>.ts` (camelCase file names). Import in the file that uses them.
+
+## Examples
+
+```typescript
+// ❌ BAD — type and helper in same file as usage
+// someController.ts
+type CreateUserPayload = { name: string; email: string };
+const formatDisplayName = (name: string) => name.trim();
+export const createUser = (req) => { ... };
+```
+
+```typescript
+// ✅ GOOD — types and helpers in shared files, imported
+// someController.ts
+import type { CreateUserPayload } from '../types/user.types';
+import { formatDisplayName } from '../utils/format';
+import { EStatusMessages } from '../enums';
+import { MAX_NAME_LENGTH } from '../constants';
+export const createUser = (req) => { ... };
+```
+
+When adding new helpers, types, enums, or constants, create or update the appropriate shared file first, then add the import in the consuming file.

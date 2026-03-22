@@ -36,16 +36,19 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  onlinePlayer           OnlinePlayer?
-  sentFriendRequests     Friendship[]  @relation("SentFriendRequests")
-  receivedFriendRequests Friendship[]  @relation("ReceivedFriendRequests")
-  gameHistory            GameHistory[]
+  onlinePlayer             OnlinePlayer?
+  sentFriendRequests       Friendship[]  @relation("SentFriendRequests")
+  receivedFriendRequests   Friendship[]  @relation("ReceivedFriendRequests")
+  gameHistory              GameHistory[]
+  gameHistoryAsOpponent    GameHistory[] @relation("GameHistoryAsOpponent")
 }
 
 model GameHistory {
   id           String      @id @default(uuid())
   userId       String
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opponentId   String?
+  opponent     User?       @relation("GameHistoryAsOpponent", fields: [opponentId], references: [id], onDelete: SetNull)
   opponentName String
   status       EGameStatus
   gameData     String

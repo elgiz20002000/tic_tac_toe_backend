@@ -37,7 +37,8 @@ async function main() {
   await prisma.gameHistory.create({
     data: {
       userId: alice.id,
-      opponentName: "Bob",
+      opponentId: bob.id,
+      opponentName: bob.name,
       status: EGameStatus.Won,
       gameData: "Alice won against Bob",
     },

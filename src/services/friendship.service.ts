@@ -30,21 +30,21 @@ export const sendFriendshipRequestService = async (senderId: string, playerId: s
     );
   }
 
-  await prisma.friendship.create({
+  const friendship = await prisma.friendship.create({
     data: {
       requesterId: senderId,
       addresseeId: playerId,
       status: EInviteStatus.Pending,
     },
   });
+
+  return friendship;
 };
 
-export const acceptFriendshipRequestService = async (
-  requestId: string,
-  userId: string,
-): Promise<void> => {
+export const acceptFriendshipRequestService = async (requestId: string, userId: string) => {
   const friendship = await prisma.friendship.findUnique({
     where: { id: requestId },
+    include: { addressee: true },
   });
 
   if (!friendship) {
@@ -59,16 +59,16 @@ export const acceptFriendshipRequestService = async (
     );
   }
 
-  await prisma.friendship.update({
+  const updatedFriendship = await prisma.friendship.update({
     where: { id: requestId },
     data: { status: EInviteStatus.Accepted },
+    include: { addressee: true },
   });
+
+  return updatedFriendship;
 };
 
-export const rejectFriendshipRequestService = async (
-  requestId: string,
-  userId: string,
-): Promise<void> => {
+export const rejectFriendshipRequestService = async (requestId: string, userId: string) => {
   const friendship = await prisma.friendship.findUnique({
     where: { id: requestId },
   });
@@ -85,10 +85,13 @@ export const rejectFriendshipRequestService = async (
     );
   }
 
-  await prisma.friendship.update({
+  const updatedFriendship = await prisma.friendship.update({
     where: { id: requestId },
     data: { status: EInviteStatus.Denied },
+    include: { requester: true },
   });
+
+  return updatedFriendship;
 };
 
 export const getAllUserFriendshipRequestsService = async (userId: string) => {
@@ -96,38 +99,29 @@ export const getAllUserFriendshipRequestsService = async (userId: string) => {
     throw createResponseError("User ID is required", EResponseError.BadRequestError, 400);
   }
 
-  // Incoming pending requests (user needs to accept/deny)
-  const incoming = await prisma.friendship.findMany({
+  const invitationRequests = await prisma.friendship.findMany({
     where: {
       addresseeId: userId,
-      status: EInviteStatus.Pending,
+      status: { in: [EInviteStatus.Pending, EInviteStatus.Denied] },
     },
     include: { requester: true },
   });
 
-  // Outgoing pending requests (user sent, waiting for response)
-  const outgoing = await prisma.friendship.findMany({
+  return invitationRequests;
+};
+
+export const getAcceptedFriendUserIds = async (userId: string): Promise<string[]> => {
+  const rows = await prisma.friendship.findMany({
     where: {
-      requesterId: userId,
-      status: EInviteStatus.Pending,
+      OR: [
+        { requesterId: userId, status: EInviteStatus.Accepted },
+        { addresseeId: userId, status: EInviteStatus.Accepted },
+      ],
     },
-    include: { addressee: true },
+    select: { requesterId: true, addresseeId: true },
   });
 
-  // Denied requests (user is either requester or addressee)
-  const denied = await prisma.friendship.findMany({
-    where: {
-      status: EInviteStatus.Denied,
-      OR: [{ requesterId: userId }, { addresseeId: userId }],
-    },
-    include: { requester: true, addressee: true },
-  });
-
-  return {
-    incoming,
-    outgoing,
-    denied,
-  };
+  return rows.map((row) => (row.requesterId === userId ? row.addresseeId : row.requesterId));
 };
 
 export const getAllUserFriendsService = async (userId: string) => {

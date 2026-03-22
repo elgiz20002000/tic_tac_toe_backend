@@ -51,3 +51,22 @@ export const getScoreboard = async (searchText?: string) => {
     },
   });
 };
+
+export const getOnlinePlayers = async (excludeUserId: string, searchText?: string) => {
+  const where = {
+    userId: { not: excludeUserId },
+    ...(searchText?.trim()
+      ? {
+          user: {
+            name: { contains: searchText.trim(), mode: "insensitive" as const },
+          },
+        }
+      : {}),
+  };
+
+  return prisma.onlinePlayer.findMany({
+    where,
+    include: { user: { select: { id: true, name: true } } },
+    orderBy: { lastSeen: "desc" },
+  });
+};

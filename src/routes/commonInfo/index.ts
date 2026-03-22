@@ -20,4 +20,6 @@ router.get(
   commonInfoController.getScoreboard,
 );
 
+router.get("/online-players", commonInfoController.getOnlinePlayers);
+
 export default router;

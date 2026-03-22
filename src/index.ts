@@ -3,6 +3,8 @@ import "./config/env.ts";
 import "./config/passport/google.ts";
 import "./config/passport/facebook.ts";
 
+import { createServer } from "node:http";
+
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
@@ -10,20 +12,20 @@ import helmet from "helmet";
 import passport from "passport";
 
 import { limiter } from "./config/rateLimit/index.ts";
-// Import enums
 import { EResponseError, EStatusMessages } from "./enums.ts";
 import type { IResponseError } from "./interfaces.ts";
-// Import middlewares
 import { isAuth } from "./middlewares/isAuth.ts";
 import AuthRouter from "./routes/auth/index.ts";
-// Import route handlers and middleware
 import CommonInfoRouter from "./routes/commonInfo/index.ts";
 import FriendshipRouter from "./routes/friendship/index.ts";
 import StatusRouter from "./routes/status/index.ts";
+import { initSocket } from "./socket/index.ts";
 
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
 const allowedMethods = ["GET", "POST", "PUT", "DELETE"];
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
 
 // Initialize middleware
 app.set("trust proxy", 1);
@@ -34,7 +36,7 @@ app.use(limiter);
 app.use(passport.initialize());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: corsOrigin,
     methods: allowedMethods,
     credentials: true,
   }),
@@ -59,8 +61,10 @@ app.use((err: IResponseError, req: Request, res: Response, _: NextFunction) => {
   });
 });
 
-// Start the server
-app.listen(PORT, () => {
+initSocket(httpServer, corsOrigin);
+
+httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`WebSocket (Socket.IO) enabled`);
   console.log(`Press Ctrl+C to stop the server`);
 });
