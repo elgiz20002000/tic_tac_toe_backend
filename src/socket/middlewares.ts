@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Server } from "socket.io";
+import type { Server } from "socket.io";
 
 export const initSocketMiddlewares = (socketServer: Server) => {
   const jwtSecret = process.env.JWT_SECRET || "";

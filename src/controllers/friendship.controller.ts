@@ -8,7 +8,7 @@ export const sendFriendshipRequest = async (req: Request, res: Response, next: N
   const socketIO = getSocketIO();
   try {
     const { playerId } = req.body;
-    const senderId = req.user!.id;
+    const senderId = req.user?.id;
 
     const friendship = await friendshipService.sendFriendshipRequestService(senderId, playerId);
 
@@ -24,7 +24,7 @@ export const acceptFriendshipRequest = async (req: Request, res: Response, next:
   const socketIO = getSocketIO();
   try {
     const { requestId } = req.body;
-    const userId = req.user!.id;
+    const userId = req.user?.id;
 
     const updatedFriendship = await friendshipService.acceptFriendshipRequestService(
       requestId,
@@ -47,7 +47,7 @@ export const rejectFriendshipRequest = async (req: Request, res: Response, next:
   const socketIO = getSocketIO();
   try {
     const { requestId } = req.body;
-    const userId = req.user!.id;
+    const userId = req.user?.id;
 
     const updatedFriendship = await friendshipService.rejectFriendshipRequestService(
       requestId,
@@ -70,7 +70,7 @@ export const getAllUserFriendshipRequests = async (
   next: NextFunction,
 ) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user?.id;
     const friendshipRequests = await friendshipService.getAllUserFriendshipRequestsService(userId);
 
     res.status(200).json(friendshipRequests);
@@ -81,7 +81,7 @@ export const getAllUserFriendshipRequests = async (
 
 export const getAllUserFriends = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user!.id;
+    const userId = req.user?.id;
     const friends = await friendshipService.getAllUserFriendsService(userId);
 
     res.status(200).json(friends);

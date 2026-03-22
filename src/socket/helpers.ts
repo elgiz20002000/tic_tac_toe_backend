@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import type { Socket } from "socket.io";
 
 import * as friendshipService from "../services/friendship.service.ts";
 import type { UserPresencePayload } from "./types.ts";

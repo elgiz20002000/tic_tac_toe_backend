@@ -1,4 +1,4 @@
-import { EOnlinePlayerStatus } from "@prisma/client";
+import type { EOnlinePlayerStatus } from "@prisma/client";
 
 /**
  * Payload sent to clients when a user comes online or status changes.

@@ -54,7 +54,7 @@ app.use((_, res) => {
 });
 
 // Global error handler
-app.use((err: IResponseError, req: Request, res: Response, _: NextFunction) => {
+app.use((err: IResponseError, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
   res.status(err.status || 500).json({
     error: err.message || EStatusMessages.InternalServerError,
