@@ -1,4 +1,4 @@
-import { EOnlinePlayerStatus } from "@prisma/client";
+import type { EOnlinePlayerStatus } from "@prisma/client";
 
 import { prisma } from "../config/db/index.ts";
 

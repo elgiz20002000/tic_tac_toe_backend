@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as FacebookStrategy } from "passport-facebook";
-import process from "process";
+import process from "node:process";
 
 passport.use(
   new FacebookStrategy(
@@ -10,7 +10,7 @@ passport.use(
       callbackURL: process.env.FACEBOOK_CALLBACK_URL || "",
       profileFields: ["id", "displayName", "email"],
     },
-    (accessToken, refreshToken, profile, done) => {
+    (_accessToken, _refreshToken, profile, done) => {
       const userProfile = {
         id: profile.id,
         name: profile.displayName || null,

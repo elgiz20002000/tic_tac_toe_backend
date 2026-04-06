@@ -2,7 +2,6 @@ import { User as UserFromPrisma } from "@prisma/client";
 
 declare global {
   namespace Express {
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface User extends UserFromPrisma {}
     interface Request {
       user?: UserFromPrisma;
