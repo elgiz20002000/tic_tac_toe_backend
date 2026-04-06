@@ -12,6 +12,7 @@ import helmet from "helmet";
 import passport from "passport";
 
 import { limiter } from "./config/rateLimit/index.ts";
+import { setupSwagger } from "./config/swagger.ts";
 import { EResponseError, EStatusMessages } from "./enums.ts";
 import type { IResponseError } from "./interfaces.ts";
 import { isAuth } from "./middlewares/isAuth.ts";
@@ -43,6 +44,8 @@ app.use(
 );
 app.use(helmet());
 
+setupSwagger(app);
+
 // Route handlers
 app.use("/auth", AuthRouter);
 app.use("/commonInfo", isAuth, CommonInfoRouter);
@@ -65,6 +68,7 @@ initSocket(httpServer, corsOrigin);
 
 httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`API docs (Swagger UI): http://localhost:${PORT}/api-docs`);
   console.log(`WebSocket (Socket.IO) enabled`);
   console.log(`Press Ctrl+C to stop the server`);
 });
