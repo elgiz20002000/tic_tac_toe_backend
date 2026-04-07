@@ -4,7 +4,7 @@ declare global {
   namespace Express {
     interface User extends UserFromPrisma {}
     interface Request {
-      user?: UserFromPrisma;
+      user: UserFromPrisma;
     }
   }
 }

@@ -1,6 +1,6 @@
+import process from "node:process";
 import passport from "passport";
 import { Strategy as FacebookStrategy } from "passport-facebook";
-import process from "node:process";
 
 passport.use(
   new FacebookStrategy(
