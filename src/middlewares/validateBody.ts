@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { ZodSchema } from "zod";
+import { ZodError, type ZodSchema } from "zod";
 
 import { EResponseError } from "../enums.ts";
 import { createResponseError } from "../utils/createResponseError.ts";
@@ -9,8 +9,12 @@ export const validateBody =
     try {
       schema.parse(req.body);
       next();
-    } catch (err: any) {
-      const error = createResponseError(err.errors, EResponseError.ValidationError, 400);
-      next(error);
+    } catch (err: unknown) {
+      if (err instanceof ZodError) {
+        const error = createResponseError(err.message, EResponseError.ValidationError, 400);
+        next(error);
+        return;
+      }
+      next(err);
     }
   };

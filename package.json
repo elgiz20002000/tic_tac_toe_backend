@@ -12,13 +12,16 @@
     "check": "biome check --write .",
     "check:unsafe": "biome check --write --unsafe .",
     "check:ci": "biome ci .",
+    "typecheck": "tsc -p tsconfig.json",
+    "check:precommit": "npm run check:ci && npm run typecheck",
     "start:dev": "node --experimental-transform-types  --watch src/index.ts",
     "prisma-studio": "npx prisma studio --schema=src/schema.prisma",
     "reset-db": "npx prisma migrate reset --schema=src/schema.prisma",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
     "docker:migrate": "docker compose exec app npx prisma migrate deploy --schema=src/schema.prisma",
-    "db:seed": "npx prisma db seed --schema=src/schema.prisma"
+    "db:seed": "npx prisma db seed --schema=src/schema.prisma",
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "node --experimental-transform-types src/seeders/index.ts"
@@ -58,6 +61,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "prettier": "^3.5.3",
+    "husky": "^9.1.7",
     "prisma": "^6.8.1",
     "typescript": "^5.8.3"
   }

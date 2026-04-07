@@ -81,7 +81,7 @@ export const getAllUserFriendshipRequests = async (
 
 export const getAllUserFriends = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const friends = await friendshipService.getAllUserFriendsService(userId);
 
     res.status(200).json(friends);
