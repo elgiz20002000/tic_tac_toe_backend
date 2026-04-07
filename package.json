@@ -14,7 +14,7 @@
     "check:ci": "biome ci .",
     "typecheck": "tsc -p tsconfig.json",
     "ci": "npm run check:ci && npx prisma generate --schema=src/schema.prisma && npm run typecheck",
-    "check:precommit": "npm run check:ci && npm run typecheck",
+    "check:precommit": "npm run ci",
     "start:dev": "node --experimental-transform-types  --watch src/index.ts",
     "prisma-studio": "npx prisma studio --schema=src/schema.prisma",
     "reset-db": "npx prisma migrate reset --schema=src/schema.prisma",
