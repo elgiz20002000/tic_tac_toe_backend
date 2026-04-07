@@ -8,12 +8,13 @@ import { createServer } from "node:http";
 import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-import helmet from "helmet";
 import passport from "passport";
 
 import { limiter } from "./config/rateLimit/index.ts";
+import { setupSwagger } from "./config/swagger.ts";
 import { EResponseError, EStatusMessages } from "./enums.ts";
 import type { IResponseError } from "./interfaces.ts";
+import { helmetWithSwaggerSupport } from "./middlewares/helmetWithSwaggerSupport.ts";
 import { isAuth } from "./middlewares/isAuth.ts";
 import AuthRouter from "./routes/auth/index.ts";
 import CommonInfoRouter from "./routes/commonInfo/index.ts";
@@ -41,7 +42,9 @@ app.use(
     credentials: true,
   }),
 );
-app.use(helmet());
+app.use(helmetWithSwaggerSupport);
+
+setupSwagger(app);
 
 // Route handlers
 app.use("/auth", AuthRouter);
@@ -65,6 +68,7 @@ initSocket(httpServer, corsOrigin);
 
 httpServer.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`API docs (Swagger UI): http://localhost:${PORT}/api-docs`);
   console.log(`WebSocket (Socket.IO) enabled`);
   console.log(`Press Ctrl+C to stop the server`);
 });
