@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const getGameHistorySchema = z.object({
-  dateFrom: z.date().optional(),
-  dateTo: z.date().optional(),
+  dateFrom: z.coerce.date().optional(),
+  dateTo: z.coerce.date().optional(),
 });
 
 export const getScoreboardSchema = z.object({
