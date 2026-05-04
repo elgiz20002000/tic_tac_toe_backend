@@ -18,9 +18,12 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
+          # Deploy can exceed default limits on small VPS (Docker build + migrate).
+          command_timeout: 30m
           script: |
             cd ~/tic_tac_toe_backend
             git pull origin main
             docker compose up -d --build
             docker compose exec app npx prisma migrate deploy --schema=src/schema.prisma
-            docker compose exec app npx prisma db seed
+            # Do not run `prisma db seed` here: it wipes all tables (see seeders/index.ts).
+            # For demo data on an empty DB, SSH once and run: docker compose exec app npx prisma db seed --schema=src/schema.prisma
