@@ -49,14 +49,18 @@ async function main() {
   });
 
   const now = new Date();
+  /** Every seeded user needs an `OnlinePlayer` row — sockets and REST assume it exists. */
   await prisma.onlinePlayer.createMany({
     data: [
       { userId: mobileTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
       { userId: seedFriend.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
+      { userId: pendingToTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
       { userId: inviteTargetA.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
       { userId: inviteTargetB.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Playing },
+      { userId: deniedToTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
       { userId: alice.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
       { userId: bob.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
+      { userId: charlie.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
     ],
   });
 
