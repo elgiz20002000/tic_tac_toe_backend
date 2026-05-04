@@ -6,14 +6,19 @@ import { createUserWithOnlinePlayer } from "../utils/createUserWithOnlinePlayer.
 import { upsertOnlinePlayerPresence } from "../utils/upsertOnlinePlayerPresence.ts";
 
 export const loginCallback = async (user: User) => {
+  const displayName = typeof user.name === "string" ? user.name.trim() : "";
+  if (!displayName) {
+    throw new Error("OAuth profile has no usable display name for User.name");
+  }
+
   let dbUser = await prisma.user.findUnique({
-    where: { name: user.name },
+    where: { name: displayName },
   });
 
   if (!dbUser) {
     const now = new Date();
     dbUser = await createUserWithOnlinePlayer(
-      { name: user.name },
+      { name: displayName },
       { lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
     );
   } else {
