@@ -164,7 +164,8 @@ export const openApiSpec = {
         ],
         responses: {
           "200": {
-            description: "Online player list",
+            description:
+              "Online players (excluding self). Each item includes user id/name, presence fields, and friendship vs the viewer: inviteStatus (Pending | Accepted | Denied | null) and inviteDirection (incoming = they invited you, outgoing = you invited them, null = no row).",
             content: {
               "application/json": {
                 schema: { type: "array", items: { type: "object", additionalProperties: true } },
