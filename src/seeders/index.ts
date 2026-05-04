@@ -12,6 +12,7 @@ import {
   SEED_USER_MOBILE_TESTER,
   SEED_USER_PENDING_TO_TESTER,
 } from "../constants/seedData.ts";
+import { createUserWithOnlinePlayer } from "../utils/createUserWithOnlinePlayer.ts";
 
 async function main() {
   await prisma.scoreboard.deleteMany();
@@ -20,15 +21,44 @@ async function main() {
   await prisma.onlinePlayer.deleteMany();
   await prisma.user.deleteMany();
 
-  const mobileTester = await prisma.user.create({ data: { ...SEED_USER_MOBILE_TESTER } });
-  const seedFriend = await prisma.user.create({ data: { ...SEED_USER_FRIEND } });
-  const pendingToTester = await prisma.user.create({ data: { ...SEED_USER_PENDING_TO_TESTER } });
-  const inviteTargetA = await prisma.user.create({ data: { ...SEED_USER_INVITE_TARGET_A } });
-  const inviteTargetB = await prisma.user.create({ data: { ...SEED_USER_INVITE_TARGET_B } });
-  const deniedToTester = await prisma.user.create({ data: { ...SEED_USER_DENIED_TO_TESTER } });
-  const alice = await prisma.user.create({ data: { ...SEED_USER_ALICE } });
-  const bob = await prisma.user.create({ data: { ...SEED_USER_BOB } });
-  const charlie = await prisma.user.create({ data: { ...SEED_USER_CHARLIE } });
+  const now = new Date();
+
+  const mobileTester = await createUserWithOnlinePlayer(SEED_USER_MOBILE_TESTER, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Online,
+  });
+  const seedFriend = await createUserWithOnlinePlayer(SEED_USER_FRIEND, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Online,
+  });
+  const pendingToTester = await createUserWithOnlinePlayer(SEED_USER_PENDING_TO_TESTER, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Online,
+  });
+  const inviteTargetA = await createUserWithOnlinePlayer(SEED_USER_INVITE_TARGET_A, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Online,
+  });
+  const inviteTargetB = await createUserWithOnlinePlayer(SEED_USER_INVITE_TARGET_B, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Playing,
+  });
+  const deniedToTester = await createUserWithOnlinePlayer(SEED_USER_DENIED_TO_TESTER, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Offline,
+  });
+  const alice = await createUserWithOnlinePlayer(SEED_USER_ALICE, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Offline,
+  });
+  const bob = await createUserWithOnlinePlayer(SEED_USER_BOB, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Online,
+  });
+  const charlie = await createUserWithOnlinePlayer(SEED_USER_CHARLIE, {
+    lastSeen: now,
+    currentStatus: EOnlinePlayerStatus.Offline,
+  });
 
   await prisma.friendship.createMany({
     data: [
@@ -45,22 +75,6 @@ async function main() {
       },
       { requesterId: alice.id, addresseeId: bob.id, status: EInviteStatus.Accepted },
       { requesterId: bob.id, addresseeId: charlie.id, status: EInviteStatus.Pending },
-    ],
-  });
-
-  const now = new Date();
-  /** Every seeded user needs an `OnlinePlayer` row — sockets and REST assume it exists. */
-  await prisma.onlinePlayer.createMany({
-    data: [
-      { userId: mobileTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
-      { userId: seedFriend.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
-      { userId: pendingToTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
-      { userId: inviteTargetA.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
-      { userId: inviteTargetB.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Playing },
-      { userId: deniedToTester.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
-      { userId: alice.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
-      { userId: bob.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Online },
-      { userId: charlie.id, lastSeen: now, currentStatus: EOnlinePlayerStatus.Offline },
     ],
   });
 
