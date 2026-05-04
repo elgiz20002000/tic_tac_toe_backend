@@ -1,4 +1,7 @@
+import type { EInviteStatus } from "@prisma/client";
+
 import { prisma } from "../config/db/index.ts";
+import type { IOnlinePlayerListItem } from "../types/commonInfo.types.ts";
 
 export const getMainPageInfo = async (userId: string) => {
   const playerCounts = await prisma.user.findFirst({
@@ -52,9 +55,12 @@ export const getScoreboard = async (searchText?: string) => {
   });
 };
 
-export const getOnlinePlayers = async (excludeUserId: string, searchText?: string) => {
+export const getOnlinePlayers = async (
+  viewerUserId: string,
+  searchText?: string,
+): Promise<IOnlinePlayerListItem[]> => {
   const where = {
-    userId: { not: excludeUserId },
+    userId: { not: viewerUserId },
     ...(searchText?.trim()
       ? {
           user: {
@@ -64,9 +70,55 @@ export const getOnlinePlayers = async (excludeUserId: string, searchText?: strin
       : {}),
   };
 
-  return prisma.onlinePlayer.findMany({
+  const rows = await prisma.onlinePlayer.findMany({
     where,
-    include: { user: { select: { id: true, name: true } } },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          receivedFriendRequests: {
+            where: { requesterId: viewerUserId },
+            select: { status: true },
+            take: 1,
+          },
+          sentFriendRequests: {
+            where: { addresseeId: viewerUserId },
+            select: { status: true },
+            take: 1,
+          },
+        },
+      },
+    },
     orderBy: { lastSeen: "desc" },
+  });
+
+  return rows.map((row): IOnlinePlayerListItem => {
+    const outgoing = row.user.receivedFriendRequests[0];
+    const incoming = row.user.sentFriendRequests[0];
+
+    let inviteStatus: EInviteStatus | null = null;
+    let inviteDirection: "incoming" | "outgoing" | null = null;
+
+    if (outgoing) {
+      inviteStatus = outgoing.status;
+      inviteDirection = "outgoing";
+    } else if (incoming) {
+      inviteStatus = incoming.status;
+      inviteDirection = "incoming";
+    }
+
+    return {
+      id: row.id,
+      userId: row.userId,
+      lastSeen: row.lastSeen,
+      currentStatus: row.currentStatus,
+      user: {
+        id: row.user.id,
+        name: row.user.name,
+      },
+      inviteStatus,
+      inviteDirection,
+    };
   });
 };
