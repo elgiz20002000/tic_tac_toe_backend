@@ -9,13 +9,16 @@ import cors from "cors";
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import passport from "passport";
-
+import { register } from "prom-client";
+import { setupPrometheusMetrics } from "./config/prometheusMetrics.ts";
 import { limiter } from "./config/rateLimit/index.ts";
 import { setupSwagger } from "./config/swagger.ts";
+import { METRICS_PATH } from "./constants/metricsConstants.ts";
 import { EResponseError, EStatusMessages } from "./enums.ts";
 import type { IResponseError } from "./interfaces.ts";
 import { helmetWithSwaggerSupport } from "./middlewares/helmetWithSwaggerSupport.ts";
 import { isAuth } from "./middlewares/isAuth.ts";
+import { prometheusHttpMetrics } from "./middlewares/prometheusHttpMetrics.ts";
 import AuthRouter from "./routes/auth/index.ts";
 import CommonInfoRouter from "./routes/commonInfo/index.ts";
 import FriendshipRouter from "./routes/friendship/index.ts";
@@ -25,6 +28,8 @@ import { initSocket } from "./socket/index.ts";
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
+
+setupPrometheusMetrics();
 const allowedMethods = ["GET", "POST", "PUT", "DELETE"];
 const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
 
@@ -44,7 +49,14 @@ app.use(
 );
 app.use(helmetWithSwaggerSupport);
 
+app.use(prometheusHttpMetrics);
+
 setupSwagger(app);
+
+app.get(METRICS_PATH, async (_req, res) => {
+  res.setHeader("Content-Type", register.contentType);
+  res.end(await register.metrics());
+});
 
 // Route handlers
 app.use("/auth", AuthRouter);
