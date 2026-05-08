@@ -41,6 +41,7 @@ services:
       - ./nginx/certbot-webroot:/var/www/certbot:ro
     depends_on:
       - app
+      - grafana
 
   prometheus:
     image: prom/prometheus:v2.55.1
@@ -63,6 +64,7 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
+      # On the server set: GRAFANA_ROOT_URL=https://grafana.ticdactoe.com
       GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3001}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
